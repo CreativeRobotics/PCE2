@@ -1,0 +1,1 @@
+Firmware was developed using the Arduino IDE with the Teensyduino plugins. The hardware is based on the Teensy 3.2 microcontroller board.
