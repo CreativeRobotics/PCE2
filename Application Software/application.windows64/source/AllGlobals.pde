@@ -3,6 +3,10 @@ boolean MOUSE_TEST_MODE = false;
 boolean animateRounds = true;
 int replyTimeouts = 0;
 
+boolean noUnitTest = false;
+
+static final int countdownDefault = 1;
+int countdown = countdownDefault; //used to create a pause before a round starts as a hack to ensure the screen redraws before the round starts
 /*Practice modes:
 0 = no practice
 4 = free practice
@@ -10,6 +14,11 @@ int replyTimeouts = 0;
 color backgroundCol = color(220);
 color tabBackgroundCol = color(170);
 
+color backgroundColTRIAL_ACTIVE = color(255, 197, 110);
+color tabBackgroundColTRIAL_ACTIVE = color(50);
+
+color backgroundColROUND_ACTIVE = color(247, 98, 98);
+color tabBackgroundColROUND_ACTIVE = color(50);
 int practiceIterations = 0;
 
 //Time benchmarking variables for measuring latencies on the trial loop

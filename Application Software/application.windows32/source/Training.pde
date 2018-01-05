@@ -68,15 +68,10 @@ void resetEnvironments(){
 void randomisePlayerPositions(){
     //Setup random user positions:
   for(int n = 0; n < numberOfEnvironments; n++){
-    //Player0Pos = int(random(0));
-    //Player1Pos = int(random(0));
-    Env[n].Player0.move(int(random(environmentWidth)));
-    Env[n].Player1.move(int(random(environmentWidth)));
-    //randomise the static object positions
-    //movingObjectPosA = int(random(0));
-    //movingObjectPosB = int(random(0));
-    Env[n].Player0.setStaticParameters(Env[n].Player0.staticWidth , int(random(environmentWidth))); //width, position
-    Env[n].Player1.setStaticParameters(Env[n].Player1.staticWidth , int(random(environmentWidth)));
+    Env[n].Player0.playerPosition = int(random(0,environmentWidth));
+    Env[n].Player1.playerPosition = int(random(0,environmentWidth));
+    Env[n].Player0.move(Env[n].Player0.playerPosition);
+    Env[n].Player1.move(Env[n].Player1.playerPosition);
   }
 }
 void randomiseStaticPositions(){

@@ -77,6 +77,7 @@ class PCPlayer
   void setStaticParameters(int sWidth, int sPos){
     setStaticPosition(sPos);
     setStaticWidth(sWidth);
+    
   }
   //-----------------------------------------------------------------------
   void setplayerWidth(int uWidth){
@@ -262,6 +263,12 @@ class PCEnvironment
     user0.haptic1Value = Player0.hapticStrength1;
     user1.haptic0Value = Player1.hapticStrength0;
     user1.haptic1Value = Player1.hapticStrength1;
+    //copy any LED settings as well...?
+    Player0.LEDBrightness = user0.LEDBrightness;
+    Player1.LEDBrightness = user1.LEDBrightness;
+    
+    Player0.buttonState = user0.buttonState;
+    Player1.buttonState = user0.buttonState;
   }
   //-----------------------------------------------------------------------
   //move by adding new positions to the existing ones

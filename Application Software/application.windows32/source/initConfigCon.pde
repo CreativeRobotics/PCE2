@@ -36,7 +36,7 @@ int setupMessages(int xp, int yp, int gap){
 
 
 void setupMapCon(int xp, int yp){
-  List l = Arrays.asList("0 vs 1 and 2 vs 3", "0 vs 2 and 1 vs 3", "0 vs 3 and 1 vs 2");
+  
   cp5.addScrollableList("gameMapping")
    .setPosition(xp, yp)
    .setSize(listBoxWidth, listBoxHeight)
@@ -45,7 +45,7 @@ void setupMapCon(int xp, int yp){
    .setColorLabel(255)
    //.addItems(portList)
    .setLabel("Player Mapping Mode")
-   .addItems(l)
+   .addItems(playerMapListText)
    .setType(ScrollableList.DROPDOWN ) // currently supported DROPDOWN and LIST
    .close()
    .moveTo("Configuration");

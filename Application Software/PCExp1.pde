@@ -64,20 +64,33 @@ void setup()
   //randomisePlayerPositions();
   //randomiseDimensions();
   resetEnvironments();
+  initEnvironments(player0StaticObjectPosition, player1StaticObjectPosition); 
+  drawGraphics();
 }
 
 void draw()
 {
-  background(backgroundCol);
-  fill(tabBackgroundCol);
+  if(Trial.trialMode == TRIAL_ACTIVE && Trial.roundActive == false){
+    background(backgroundColTRIAL_ACTIVE);
+    fill(tabBackgroundColTRIAL_ACTIVE);
+  }
+  else if(Trial.trialMode == TRIAL_ACTIVE && Trial.roundActive == true){
+    background(backgroundColROUND_ACTIVE);
+    fill(tabBackgroundColROUND_ACTIVE);
+  }
+  else{
+    background(backgroundCol);
+    fill(tabBackgroundCol);
+  }
   rect(0,0,width,30);
   if(MOUSE_TEST_MODE == true) updateMouseMode();
   
   if(Trial.trialMode == MANUAL) updateManual();
   else if(Trial.trialMode == FREE_PRACTICE) updateFreePractice();
   else if(Trial.trialMode == TRIAL_ACTIVE){ //trial active
-    //Do nothing untol roundActive is true
-    if(Trial.roundActive == true) {
+    //Do nothing untol roundActive is true and countdown is 0
+    if(Trial.roundActive == false) updateFreePractice();
+    if(Trial.roundActive == true && countdown == 0) {
       //halt the loop and stop drawing on the screen
       //Any keyboard input now will hald the trial
       noLoop();
@@ -85,6 +98,12 @@ void draw()
       //runTrial only returns at the end of the trial
       loop();
       endRound();
+    }
+    if(Trial.roundActive == true && countdown > 0){
+      countdown--;
+      println(countdown);
+      //redraw();
+      delay(1);
     }
   }
   

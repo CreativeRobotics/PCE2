@@ -84,20 +84,33 @@ public void setup()
   //randomisePlayerPositions();
   //randomiseDimensions();
   resetEnvironments();
+  initEnvironments(player0StaticObjectPosition, player1StaticObjectPosition); 
+  drawGraphics();
 }
 
 public void draw()
 {
-  background(backgroundCol);
-  fill(tabBackgroundCol);
+  if(Trial.trialMode == TRIAL_ACTIVE && Trial.roundActive == false){
+    background(backgroundColTRIAL_ACTIVE);
+    fill(tabBackgroundColTRIAL_ACTIVE);
+  }
+  else if(Trial.trialMode == TRIAL_ACTIVE && Trial.roundActive == true){
+    background(backgroundColROUND_ACTIVE);
+    fill(tabBackgroundColROUND_ACTIVE);
+  }
+  else{
+    background(backgroundCol);
+    fill(tabBackgroundCol);
+  }
   rect(0,0,width,30);
   if(MOUSE_TEST_MODE == true) updateMouseMode();
   
   if(Trial.trialMode == MANUAL) updateManual();
   else if(Trial.trialMode == FREE_PRACTICE) updateFreePractice();
   else if(Trial.trialMode == TRIAL_ACTIVE){ //trial active
-    //Do nothing untol roundActive is true
-    if(Trial.roundActive == true) {
+    //Do nothing untol roundActive is true and countdown is 0
+    if(Trial.roundActive == false) updateFreePractice();
+    if(Trial.roundActive == true && countdown == 0) {
       //halt the loop and stop drawing on the screen
       //Any keyboard input now will hald the trial
       noLoop();
@@ -105,6 +118,12 @@ public void draw()
       //runTrial only returns at the end of the trial
       loop();
       endRound();
+    }
+    if(Trial.roundActive == true && countdown > 0){
+      countdown--;
+      println(countdown);
+      //redraw();
+      delay(1);
     }
   }
   
@@ -251,6 +270,10 @@ boolean MOUSE_TEST_MODE = false;
 boolean animateRounds = true;
 int replyTimeouts = 0;
 
+boolean noUnitTest = false;
+
+static final int countdownDefault = 1;
+int countdown = countdownDefault; //used to create a pause before a round starts as a hack to ensure the screen redraws before the round starts
 /*Practice modes:
 0 = no practice
 4 = free practice
@@ -258,6 +281,11 @@ int replyTimeouts = 0;
 int backgroundCol = color(220);
 int tabBackgroundCol = color(170);
 
+int backgroundColTRIAL_ACTIVE = color(255, 197, 110);
+int tabBackgroundColTRIAL_ACTIVE = color(50);
+
+int backgroundColROUND_ACTIVE = color(247, 98, 98);
+int tabBackgroundColROUND_ACTIVE = color(50);
 int practiceIterations = 0;
 
 //Time benchmarking variables for measuring latencies on the trial loop
@@ -341,14 +369,26 @@ public void RandomDim(int theValue){
 public void ResetEnv(int theValue){
   resetEnvironments();
 }
-public void StartRound(int theValue){
+public void StartRoundButton(int theValue){
   if(Trial.trialMode != TRIAL_ACTIVE) {
     println("Error - trial not active");
     return;
   }
+  countdown = countdownDefault;
   startRound();
-  //Trial.trialMode = 1;
+  //Trial.trialMode = TRIAL_ACTIVE;
   println("Starting Round");
+  //println("Count at " + countdown);
+  //if(Trial.roundActive == true)  println("Round Active");
+  //if(Trial.roundActive == false)  println("Round NOT Active");
+  redraw();
+}
+
+public void ShiftDiad(int theValue){
+  //shift diad mappings
+  Trial.setMapping( ++Trial.playerMapping );
+  cp5.getController( "gameMapping" ).setValue(Trial.playerMapping);
+  cp5.get(Textlabel.class,"DiadOption").setText((String)playerMapListText.get(Trial.playerMapping));
 }
 
 
@@ -381,11 +421,11 @@ public void ManualMode(int theValue){
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Manual Mode");
 }
 
-public void animation(boolean theValue){
+/*public void animation(boolean theValue){
   animateRounds = theValue;
   //if(theValue) println("Animation ON");
   //else println("Animation OFF");
-}
+}*/
 public void MouseMode(boolean theValue){
   MOUSE_TEST_MODE = theValue;
   //if(theValue) println("Mousemode ON");
@@ -517,6 +557,7 @@ class PCPlayer
   public void setStaticParameters(int sWidth, int sPos){
     setStaticPosition(sPos);
     setStaticWidth(sWidth);
+    
   }
   //-----------------------------------------------------------------------
   public void setplayerWidth(int uWidth){
@@ -702,6 +743,12 @@ class PCEnvironment
     user0.haptic1Value = Player0.hapticStrength1;
     user1.haptic0Value = Player1.hapticStrength0;
     user1.haptic1Value = Player1.hapticStrength1;
+    //copy any LED settings as well...?
+    Player0.LEDBrightness = user0.LEDBrightness;
+    Player1.LEDBrightness = user1.LEDBrightness;
+    
+    Player0.buttonState = user0.buttonState;
+    Player1.buttonState = user0.buttonState;
   }
   //-----------------------------------------------------------------------
   //move by adding new positions to the existing ones
@@ -786,11 +833,6 @@ class PCEnvironment
   }
 
 }
-
-
-
-
-
 //class for handling communication between the computer and a single interface unit
 
 //A global serial event handler
@@ -1174,6 +1216,12 @@ public void runRound(){
   }
   roundStep = 0;
   initEnvironments(player0StaticObjectPosition, player1StaticObjectPosition); //randomise user positions and set static object positions
+  if(noUnitTest == true) {
+    //delay then return;
+    delay(1000);
+    return;
+  }
+  
   
   roundStartTime = System.currentTimeMillis();
   startMessageExpiry += roundStartTime;
@@ -1242,6 +1290,8 @@ public void runRound(){
   sendHaltRoundAll(false);
   for(int n = 0; n < numberOfUnits; n++)User[n].resetVariables();
   resetEnvironments();
+  
+  println("Ended Round");
 }
 //=====================================================================================================================================================================
 //beep and flash
@@ -1291,8 +1341,8 @@ public void initEnvironments(int staticPos0, int staticPos1){
     Env[n].Player1.move(Env[n].Player1.playerPosition);
     //reset the static object positions
     
-    Env[n].Player0.setStaticParameters(staticPos0, staticObjectWidth);
-    Env[n].Player1.setStaticParameters(staticPos1, staticObjectWidth);
+    Env[n].Player0.setStaticParameters(staticObjectWidth, staticPos0);
+    Env[n].Player1.setStaticParameters(staticObjectWidth, staticPos1);
   }
 }
 //=====================================================================================================================================================================
@@ -1421,15 +1471,10 @@ public void resetEnvironments(){
 public void randomisePlayerPositions(){
     //Setup random user positions:
   for(int n = 0; n < numberOfEnvironments; n++){
-    //Player0Pos = int(random(0));
-    //Player1Pos = int(random(0));
-    Env[n].Player0.move(PApplet.parseInt(random(environmentWidth)));
-    Env[n].Player1.move(PApplet.parseInt(random(environmentWidth)));
-    //randomise the static object positions
-    //movingObjectPosA = int(random(0));
-    //movingObjectPosB = int(random(0));
-    Env[n].Player0.setStaticParameters(Env[n].Player0.staticWidth , PApplet.parseInt(random(environmentWidth))); //width, position
-    Env[n].Player1.setStaticParameters(Env[n].Player1.staticWidth , PApplet.parseInt(random(environmentWidth)));
+    Env[n].Player0.playerPosition = PApplet.parseInt(random(0,environmentWidth));
+    Env[n].Player1.playerPosition = PApplet.parseInt(random(0,environmentWidth));
+    Env[n].Player0.move(Env[n].Player0.playerPosition);
+    Env[n].Player1.move(Env[n].Player1.playerPosition);
   }
 }
 public void randomiseStaticPositions(){
@@ -1464,16 +1509,25 @@ long roundLengthMillis = roundLengthSeconds*1000;
   public static final int TRIAL_ACTIVE = 2;
 
 //int roundState = 0;
+String diadMap0 = "0 Vs 1 and 2 Vs 3";
+String diadMap1 = "0 Vs 2 and 1 Vs 3";
+String diadMap2 = "0 Vs 3 and 1 Vs 2";
+//List playerMapListText = Arrays.asList("0 vs 1 and 2 vs 3", "0 vs 2 and 1 vs 3", "0 vs 3 and 1 vs 2");
+List playerMapListText = Arrays.asList(diadMap0, diadMap1, diadMap2);
+//List<String> myString = new ArrayList<String>();
+//myString.add("Strings"); add(diadMap0);
 
 public void startTrial(){
   //start logging data
   //update the trial number
   println("Starting Trial");
+  Trial.startTrial();
   cp5.get(Textlabel.class,"TrialLabel").setText(String.valueOf(Trial.trialNumber));
- 
-  Trial.trialMode = TRIAL_ACTIVE;
+  //Trial.roundNumber = 0;
+  cp5.get(Textlabel.class,"RoundLabel").setText(String.valueOf(Trial.roundNumber));
+  //Trial.trialMode = TRIAL_ACTIVE;
   startLogs();
-  Trial.roundNumber = 0;
+  
   replyTimeouts = 0;
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Trial Running");
 }
@@ -1483,9 +1537,7 @@ public void stopTrial(){
   println("Stopping Trial");
   //stop logging data
   stopLogs();
-  Trial.trialNumber++;
-  Trial.roundNumber = 0;
-  Trial.trialMode = FREE_PRACTICE;
+  Trial.stopTrial();
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Practice Mode");
 } 
 
@@ -1496,7 +1548,8 @@ public void startRound(){
   practiceIterations = 0;
   
   println("Running Round ...");
-  Trial.roundActive = true;
+  Trial.startRound();
+  //Trial.roundActive = true;
   cp5.get(Textlabel.class,"RoundLabel").setText(String.valueOf(Trial.roundNumber));
   cp5.get(Textlabel.class,"roundStatusLabel").setText("Round Active");
 }
@@ -1504,8 +1557,9 @@ public void startRound(){
 public void endRound(){
   println("Ending Round ...");
   cp5.get(Textlabel.class,"roundStatusLabel").setText("Round Finished");
-  Trial.roundActive = false; //just for debugging
-  Trial.roundNumber++;
+  Trial.stopRound();
+  //Trial.roundActive = false; //just for debugging
+  //Trial.roundNumber++;
 }
 //=====================================================================================================================================================================
 public boolean checkExitKey(){
@@ -1544,12 +1598,36 @@ class TrialController
   int numberOfPlayers = 2;
   int numberOfGames = 1;
   int playerPairs[][];
+  int playerMapping = 0;
   //constructer
   TrialController(int environments){
     numberOfGames = environments;
     numberOfPlayers = numberOfPlayers*2;
     playerPairs = new int[numberOfGames][2];
   }
+  
+  public void startTrial(){
+    trialMode = TRIAL_ACTIVE;
+    roundNumber = 0;
+  }
+  
+  public void stopTrial(){
+    trialNumber++;
+    roundNumber = 0;
+    trialMode = FREE_PRACTICE;
+  }
+  
+  public void startRound(){
+    //trialMode = TRIAL_ACTIVE;
+    roundActive = true;
+  }
+  
+  public void stopRound(){
+    //trialMode = FREE_PRACTICE;
+    roundActive = false;
+    roundNumber++;
+  }
+  
   
   public void initialiseMapping(){
     //map each player to their neighbor
@@ -1600,6 +1678,9 @@ class TrialController
   
   public void setMapping(int mapNo){
     //fudge this for now
+    playerMapping = mapNo;
+    if(playerMapping > 2) playerMapping = 0;
+    if(playerMapping < 0) playerMapping = 0;
     switch(numberOfGames){
       case 1:
         playerPairs[0][0] = 0; //player 0 is user o
@@ -1607,19 +1688,19 @@ class TrialController
         break;
       case 2:
               //GAME - Player
-        if(mapNo == 0){
+        if(playerMapping == 0){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 1; //Game 0, Player 0 is User 1
           playerPairs[1][0] = 2; //Game 1, Player 1 is User 2
           playerPairs[1][1] = 3; //Game 1, Player 1 is User 3
         }
-        if(mapNo == 1){
+        if(playerMapping == 1){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 2; //Game 0, Player 1 is User 2
           playerPairs[1][0] = 1; //Game 1, Player 0 is User 1
           playerPairs[1][1] = 3; //Game 1, Player 1 is User 3
         }
-        if(mapNo == 2){
+        if(playerMapping == 2){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 3; //Game 0, Player 1 is User 3
           playerPairs[1][0] = 1; //Game 1, Player 0 is User 1
@@ -1941,7 +2022,7 @@ public int setupMessages(int xp, int yp, int gap){
 
 
 public void setupMapCon(int xp, int yp){
-  List l = Arrays.asList("0 vs 1 and 2 vs 3", "0 vs 2 and 1 vs 3", "0 vs 3 and 1 vs 2");
+  
   cp5.addScrollableList("gameMapping")
    .setPosition(xp, yp)
    .setSize(listBoxWidth, listBoxHeight)
@@ -1950,7 +2031,7 @@ public void setupMapCon(int xp, int yp){
    .setColorLabel(255)
    //.addItems(portList)
    .setLabel("Player Mapping Mode")
-   .addItems(l)
+   .addItems(playerMapListText)
    .setType(ScrollableList.DROPDOWN ) // currently supported DROPDOWN and LIST
    .close()
    .moveTo("Configuration");
@@ -2463,7 +2544,32 @@ public void setupLog(){
      
 }
 
-
+public void setupDiadControls(int posX, int posY, int yGap){
+  int xp = posX, yp = posY;
+  int buttonW = 200;
+  int buttonH = 50;
+  int fSize = 15;
+  cp5.addButton("ShiftDiad")
+     .setBroadcast(false)
+     .setValue(0)
+     .setPosition(xp, yp)
+     .setSize(buttonW, buttonH)  
+     .setBroadcast(true)
+     .setCaptionLabel("Shift Dyads")
+     .getCaptionLabel()
+     .setFont(largeFont)
+     .toUpperCase(false)
+     .setSize(fSize)
+     ;
+  yp+= yGap;
+  cp5.addTextlabel("DiadOption")
+     .setText(String.valueOf(Trial.trialNumber))
+     .setPosition(xp, yp)
+     .setColorValue(0)
+     .setFont(createFont("Arial",buttonFontSize*2))
+     .setText((String)playerMapListText.get(Trial.playerMapping))
+     ;
+}
 public void setupCommandButtons(){
   int buttonW = 300;
   int buttonH = 50;
@@ -2536,7 +2642,7 @@ public void setupCommandButtons(){
       
       
    vPos += vSpace+20;
-  cp5.addButton("StartRound")
+  cp5.addButton("StartRoundButton")
      .setBroadcast(false)
      .setValue(0)
      .setPosition(centreStart, vPos)
@@ -2603,11 +2709,12 @@ public void initialiseControls(){
   //setupSerialDisplay();
   setupSerialDisplays(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   setupCommandButtons();
+  setupDiadControls(800, 35, 50);
   //setupPracticeButtons();
   setupManual(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   int buttonPos = 140;
   int buttonSpacing = 60;
-  buttonPos = setupAnimationButton(10, buttonPos, buttonSpacing);
+  //buttonPos = setupAnimationButton(10, buttonPos, buttonSpacing);
   buttonPos = setupMouseConButton(10, buttonPos, buttonSpacing);
   buttonPos = setupRandomButtons(10, buttonPos, 350, 40);
   buttonPos = 60;

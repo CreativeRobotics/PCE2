@@ -17,11 +17,12 @@ void initialiseControls(){
   //setupSerialDisplay();
   setupSerialDisplays(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   setupCommandButtons();
+  setupDiadControls(800, 35, 50);
   //setupPracticeButtons();
   setupManual(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   int buttonPos = 140;
   int buttonSpacing = 60;
-  buttonPos = setupAnimationButton(10, buttonPos, buttonSpacing);
+  //buttonPos = setupAnimationButton(10, buttonPos, buttonSpacing);
   buttonPos = setupMouseConButton(10, buttonPos, buttonSpacing);
   buttonPos = setupRandomButtons(10, buttonPos, 350, 40);
   buttonPos = 60;

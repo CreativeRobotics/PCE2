@@ -11,16 +11,25 @@ long roundLengthMillis = roundLengthSeconds*1000;
   public static final int TRIAL_ACTIVE = 2;
 
 //int roundState = 0;
+String diadMap0 = "0 Vs 1 and 2 Vs 3";
+String diadMap1 = "0 Vs 2 and 1 Vs 3";
+String diadMap2 = "0 Vs 3 and 1 Vs 2";
+//List playerMapListText = Arrays.asList("0 vs 1 and 2 vs 3", "0 vs 2 and 1 vs 3", "0 vs 3 and 1 vs 2");
+List playerMapListText = Arrays.asList(diadMap0, diadMap1, diadMap2);
+//List<String> myString = new ArrayList<String>();
+//myString.add("Strings"); add(diadMap0);
 
 void startTrial(){
   //start logging data
   //update the trial number
   println("Starting Trial");
+  Trial.startTrial();
   cp5.get(Textlabel.class,"TrialLabel").setText(String.valueOf(Trial.trialNumber));
- 
-  Trial.trialMode = TRIAL_ACTIVE;
+  //Trial.roundNumber = 0;
+  cp5.get(Textlabel.class,"RoundLabel").setText(String.valueOf(Trial.roundNumber));
+  //Trial.trialMode = TRIAL_ACTIVE;
   startLogs();
-  Trial.roundNumber = 0;
+  
   replyTimeouts = 0;
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Trial Running");
 }
@@ -30,9 +39,7 @@ void stopTrial(){
   println("Stopping Trial");
   //stop logging data
   stopLogs();
-  Trial.trialNumber++;
-  Trial.roundNumber = 0;
-  Trial.trialMode = FREE_PRACTICE;
+  Trial.stopTrial();
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Practice Mode");
 } 
 
@@ -43,7 +50,8 @@ void startRound(){
   practiceIterations = 0;
   
   println("Running Round ...");
-  Trial.roundActive = true;
+  Trial.startRound();
+  //Trial.roundActive = true;
   cp5.get(Textlabel.class,"RoundLabel").setText(String.valueOf(Trial.roundNumber));
   cp5.get(Textlabel.class,"roundStatusLabel").setText("Round Active");
 }
@@ -51,8 +59,9 @@ void startRound(){
 void endRound(){
   println("Ending Round ...");
   cp5.get(Textlabel.class,"roundStatusLabel").setText("Round Finished");
-  Trial.roundActive = false; //just for debugging
-  Trial.roundNumber++;
+  Trial.stopRound();
+  //Trial.roundActive = false; //just for debugging
+  //Trial.roundNumber++;
 }
 //=====================================================================================================================================================================
 boolean checkExitKey(){
@@ -91,12 +100,36 @@ class TrialController
   int numberOfPlayers = 2;
   int numberOfGames = 1;
   int playerPairs[][];
+  int playerMapping = 0;
   //constructer
   TrialController(int environments){
     numberOfGames = environments;
     numberOfPlayers = numberOfPlayers*2;
     playerPairs = new int[numberOfGames][2];
   }
+  
+  void startTrial(){
+    trialMode = TRIAL_ACTIVE;
+    roundNumber = 0;
+  }
+  
+  void stopTrial(){
+    trialNumber++;
+    roundNumber = 0;
+    trialMode = FREE_PRACTICE;
+  }
+  
+  void startRound(){
+    //trialMode = TRIAL_ACTIVE;
+    roundActive = true;
+  }
+  
+  void stopRound(){
+    //trialMode = FREE_PRACTICE;
+    roundActive = false;
+    roundNumber++;
+  }
+  
   
   void initialiseMapping(){
     //map each player to their neighbor
@@ -147,6 +180,9 @@ class TrialController
   
   void setMapping(int mapNo){
     //fudge this for now
+    playerMapping = mapNo;
+    if(playerMapping > 2) playerMapping = 0;
+    if(playerMapping < 0) playerMapping = 0;
     switch(numberOfGames){
       case 1:
         playerPairs[0][0] = 0; //player 0 is user o
@@ -154,19 +190,19 @@ class TrialController
         break;
       case 2:
               //GAME - Player
-        if(mapNo == 0){
+        if(playerMapping == 0){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 1; //Game 0, Player 0 is User 1
           playerPairs[1][0] = 2; //Game 1, Player 1 is User 2
           playerPairs[1][1] = 3; //Game 1, Player 1 is User 3
         }
-        if(mapNo == 1){
+        if(playerMapping == 1){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 2; //Game 0, Player 1 is User 2
           playerPairs[1][0] = 1; //Game 1, Player 0 is User 1
           playerPairs[1][1] = 3; //Game 1, Player 1 is User 3
         }
-        if(mapNo == 2){
+        if(playerMapping == 2){
           playerPairs[0][0] = 0; //Game 0, Player 0 is User 0
           playerPairs[0][1] = 3; //Game 0, Player 1 is User 3
           playerPairs[1][0] = 1; //Game 1, Player 0 is User 1

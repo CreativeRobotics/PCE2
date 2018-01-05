@@ -114,7 +114,32 @@ void setupLog(){
      
 }
 
-
+void setupDiadControls(int posX, int posY, int yGap){
+  int xp = posX, yp = posY;
+  int buttonW = 200;
+  int buttonH = 50;
+  int fSize = 15;
+  cp5.addButton("ShiftDiad")
+     .setBroadcast(false)
+     .setValue(0)
+     .setPosition(xp, yp)
+     .setSize(buttonW, buttonH)  
+     .setBroadcast(true)
+     .setCaptionLabel("Shift Dyads")
+     .getCaptionLabel()
+     .setFont(largeFont)
+     .toUpperCase(false)
+     .setSize(fSize)
+     ;
+  yp+= yGap;
+  cp5.addTextlabel("DiadOption")
+     .setText(String.valueOf(Trial.trialNumber))
+     .setPosition(xp, yp)
+     .setColorValue(0)
+     .setFont(createFont("Arial",buttonFontSize*2))
+     .setText((String)playerMapListText.get(Trial.playerMapping))
+     ;
+}
 void setupCommandButtons(){
   int buttonW = 300;
   int buttonH = 50;
@@ -187,7 +212,7 @@ void setupCommandButtons(){
       
       
    vPos += vSpace+20;
-  cp5.addButton("StartRound")
+  cp5.addButton("StartRoundButton")
      .setBroadcast(false)
      .setValue(0)
      .setPosition(centreStart, vPos)

@@ -10,14 +10,26 @@ public void RandomDim(int theValue){
 public void ResetEnv(int theValue){
   resetEnvironments();
 }
-public void StartRound(int theValue){
+public void StartRoundButton(int theValue){
   if(Trial.trialMode != TRIAL_ACTIVE) {
     println("Error - trial not active");
     return;
   }
+  countdown = countdownDefault;
   startRound();
-  //Trial.trialMode = 1;
+  //Trial.trialMode = TRIAL_ACTIVE;
   println("Starting Round");
+  //println("Count at " + countdown);
+  //if(Trial.roundActive == true)  println("Round Active");
+  //if(Trial.roundActive == false)  println("Round NOT Active");
+  redraw();
+}
+
+public void ShiftDiad(int theValue){
+  //shift diad mappings
+  Trial.setMapping( ++Trial.playerMapping );
+  cp5.getController( "gameMapping" ).setValue(Trial.playerMapping);
+  cp5.get(Textlabel.class,"DiadOption").setText((String)playerMapListText.get(Trial.playerMapping));
 }
 
 
@@ -50,11 +62,11 @@ public void ManualMode(int theValue){
   cp5.get(Textlabel.class,"trialStatusLabel").setText("Manual Mode");
 }
 
-public void animation(boolean theValue){
+/*public void animation(boolean theValue){
   animateRounds = theValue;
   //if(theValue) println("Animation ON");
   //else println("Animation OFF");
-}
+}*/
 public void MouseMode(boolean theValue){
   MOUSE_TEST_MODE = theValue;
   //if(theValue) println("Mousemode ON");

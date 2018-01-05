@@ -20,6 +20,12 @@ void runRound(){
   }
   roundStep = 0;
   initEnvironments(player0StaticObjectPosition, player1StaticObjectPosition); //randomise user positions and set static object positions
+  if(noUnitTest == true) {
+    //delay then return;
+    delay(1000);
+    return;
+  }
+  
   
   roundStartTime = System.currentTimeMillis();
   startMessageExpiry += roundStartTime;
@@ -88,6 +94,8 @@ void runRound(){
   sendHaltRoundAll(false);
   for(int n = 0; n < numberOfUnits; n++)User[n].resetVariables();
   resetEnvironments();
+  
+  println("Ended Round");
 }
 //=====================================================================================================================================================================
 //beep and flash
@@ -137,8 +145,8 @@ void initEnvironments(int staticPos0, int staticPos1){
     Env[n].Player1.move(Env[n].Player1.playerPosition);
     //reset the static object positions
     
-    Env[n].Player0.setStaticParameters(staticPos0, staticObjectWidth);
-    Env[n].Player1.setStaticParameters(staticPos1, staticObjectWidth);
+    Env[n].Player0.setStaticParameters(staticObjectWidth, staticPos0);
+    Env[n].Player1.setStaticParameters(staticObjectWidth, staticPos1);
   }
 }
 //=====================================================================================================================================================================
