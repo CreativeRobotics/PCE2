@@ -18,6 +18,7 @@ void initialiseControls(){
   setupSerialDisplays(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   setupCommandButtons();
   setupDiadControls(800, 35, 50);
+  setupParticipentDataEntry( 1050, 35, 80, numberOfUnits);
   //setupPracticeButtons();
   setupManual(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   int buttonPos = 140;

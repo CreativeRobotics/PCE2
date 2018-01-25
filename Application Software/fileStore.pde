@@ -21,9 +21,12 @@ void writeFileHeader(){
       usersGame = Trial.getUsersGame(n);
       usersSlot = Trial.getPlayerSlot(n);
       LogFileCombined.print("User " + n);
-      LogFileCombined.print(" is player " + usersSlot);
+      LogFileCombined.print(" (Subject ID " + getSubjectID(n));
+      LogFileCombined.print(") is player " + usersSlot);
       LogFileCombined.print(" in Game " + usersGame);
       LogFileCombined.print(" with user " + Trial.getUsersOpponent(n));
+      
+      LogFileCombined.print(" (Subject ID " + getSubjectID(Trial.getUsersOpponent(n)) + ")");
       if(usersSlot == 0){
         LogFileCombined.print(" Width = "+Env[usersGame].Player0.playerWidth);
         LogFileCombined.print(" Starting position = "+Env[usersGame].Player0.playerPosition);

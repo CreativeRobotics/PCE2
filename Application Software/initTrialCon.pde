@@ -1,6 +1,47 @@
 int buttonFontSize = 14;
+String controlSubjectIDName = "SubjectNumber_";
+void setupParticipentDataEntry(int xp, int yp, int gap, int quantity){
+  int yps = yp;
+  
+  
+  for(int qty = 0; qty < quantity; qty++){
+    cp5.addTextfield(controlSubjectIDName + String.valueOf(qty))
+      .setPosition(xp, yps)
+      .setSize(100, 30)
+      .setFont(createFont("Arial",buttonFontSize))
+      .setColorLabel(0)
+      .setLabel("User " + qty + " Subject ID")
+      .setColor(color(0))
+      .setColorBackground(color(250))
+      ;
+    yps += gap;
+  }
+  /*cp5.addButton("TestButton")
+   .setBroadcast(false)
+   .setPosition(xp, yps)
+   .setSize(30,30)
+   .setFont(createFont("Arial",buttonFontSize))
+   .setColorLabel(255)
+   .setLabel("Test") 
+   .setLabelVisible(true)  
+   .setBroadcast(true)
+   ;*/
+}
+
+/*public void TestButton(int theValue){
+  for(int n = 0; n < numberOfUnits; n++){
+    println("SubjectText = " + getSubjectID(n));
+  }
+}*/
 
 
+String getSubjectID(int unitNumber){
+  if(unitNumber > numberOfUnits || unitNumber < 0) return " ";
+  String controlName = controlSubjectIDName+String.valueOf(unitNumber);
+  return cp5.get(Textfield.class, controlName).getText();
+  //controlSubjectIDName
+  //return " ";
+}
 
 int setupAnimationButton(int xp, int yp, int gap){
   int xps = xp;
@@ -140,6 +181,7 @@ void setupDiadControls(int posX, int posY, int yGap){
      .setText((String)playerMapListText.get(Trial.playerMapping))
      ;
 }
+
 void setupCommandButtons(){
   int buttonW = 300;
   int buttonH = 50;

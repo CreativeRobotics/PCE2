@@ -1765,9 +1765,12 @@ public void writeFileHeader(){
       usersGame = Trial.getUsersGame(n);
       usersSlot = Trial.getPlayerSlot(n);
       LogFileCombined.print("User " + n);
-      LogFileCombined.print(" is player " + usersSlot);
+      LogFileCombined.print(" (Subject ID " + getSubjectID(n));
+      LogFileCombined.print(") is player " + usersSlot);
       LogFileCombined.print(" in Game " + usersGame);
       LogFileCombined.print(" with user " + Trial.getUsersOpponent(n));
+      
+      LogFileCombined.print(" (Subject ID " + getSubjectID(Trial.getUsersOpponent(n)) + ")");
       if(usersSlot == 0){
         LogFileCombined.print(" Width = "+Env[usersGame].Player0.playerWidth);
         LogFileCombined.print(" Starting position = "+Env[usersGame].Player0.playerPosition);
@@ -2429,8 +2432,49 @@ void setupSerialDisplay(int px, int py, int gap){
    //cp5.getController("SerialTextB").moveTo("Serial");
 }*/
 int buttonFontSize = 14;
+String controlSubjectIDName = "SubjectNumber_";
+public void setupParticipentDataEntry(int xp, int yp, int gap, int quantity){
+  int yps = yp;
+  
+  
+  for(int qty = 0; qty < quantity; qty++){
+    cp5.addTextfield(controlSubjectIDName + String.valueOf(qty))
+      .setPosition(xp, yps)
+      .setSize(100, 30)
+      .setFont(createFont("Arial",buttonFontSize))
+      .setColorLabel(0)
+      .setLabel("User " + qty + " Subject ID")
+      .setColor(color(0))
+      .setColorBackground(color(250))
+      ;
+    yps += gap;
+  }
+  /*cp5.addButton("TestButton")
+   .setBroadcast(false)
+   .setPosition(xp, yps)
+   .setSize(30,30)
+   .setFont(createFont("Arial",buttonFontSize))
+   .setColorLabel(255)
+   .setLabel("Test") 
+   .setLabelVisible(true)  
+   .setBroadcast(true)
+   ;*/
+}
+
+/*public void TestButton(int theValue){
+  for(int n = 0; n < numberOfUnits; n++){
+    println("SubjectText = " + getSubjectID(n));
+  }
+}*/
 
 
+public String getSubjectID(int unitNumber){
+  if(unitNumber > numberOfUnits || unitNumber < 0) return " ";
+  String controlName = controlSubjectIDName+String.valueOf(unitNumber);
+  return cp5.get(Textfield.class, controlName).getText();
+  //controlSubjectIDName
+  //return " ";
+}
 
 public int setupAnimationButton(int xp, int yp, int gap){
   int xps = xp;
@@ -2570,6 +2614,7 @@ public void setupDiadControls(int posX, int posY, int yGap){
      .setText((String)playerMapListText.get(Trial.playerMapping))
      ;
 }
+
 public void setupCommandButtons(){
   int buttonW = 300;
   int buttonH = 50;
@@ -2710,6 +2755,7 @@ public void initialiseControls(){
   setupSerialDisplays(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   setupCommandButtons();
   setupDiadControls(800, 35, 50);
+  setupParticipentDataEntry( 1050, 35, 80, numberOfUnits);
   //setupPracticeButtons();
   setupManual(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   int buttonPos = 140;
