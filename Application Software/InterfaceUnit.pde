@@ -301,6 +301,7 @@ class PCInterfaceUnit
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + String.valueOf(NEWLINE);
     sendData(message);
   }
+  
   void updateHapticsMessage(String lcdMessage){
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + ',' + lcdMessage + String.valueOf(NEWLINE);
     sendData(message);
