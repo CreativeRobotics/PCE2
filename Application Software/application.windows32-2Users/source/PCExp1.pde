@@ -15,7 +15,7 @@ PCInterfaceUnit[] User;
 TrialController Trial;
 int test1 = 0;
 long timeTest = 0;
-int numberOfEnvironments = 1;
+int numberOfEnvironments =1; //CHANGE THIS TO USE MULTIPLE VIRTUAL ENVIRONMENTS
 int numberOfUnits = numberOfEnvironments*2;
 int environmentWidth = 600;
 

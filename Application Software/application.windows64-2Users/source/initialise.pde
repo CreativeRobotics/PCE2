@@ -30,8 +30,9 @@ void initialiseControls(){
   buttonPos = setupParameters(10, buttonPos, buttonSpacing);
   buttonPos = setupTiming(10, buttonPos, buttonSpacing);
   buttonPos = setupSetButton(10, buttonPos, buttonSpacing);
-  buttonPos = setupMessages(400, 140, buttonSpacing*2);
+  buttonPos = setupMessages(400, 180, buttonSpacing*2);
   if(numberOfEnvironments > 1) setupMapCon( 400, 40);
+  setupTrackerCon(400+listBoxWidth+100, 40);
 }
 
 
@@ -46,6 +47,18 @@ void controlEvent(ControlEvent theControlEvent) {
     Trial.setMapping((int) cp5.getController( "gameMapping" ).getValue());
     //User[n].portIndex = (int) cp5.getController( "gameMapping" ).getValue();
     //println("Game mapping set to: "+(int) cp5.getController( "gameMapping" ).getValue());
+  }
+  if( theControlEvent.isFrom( cp5.getController( "trackerballMapping" ) ) ){
+    
+    //println("Trackermode set:");
+    for(int n = 0; n < numberOfUnits; n++){
+      User[n].trackerballMode = (int)cp5.getController( "trackerballMapping" ).getValue();
+      //print("Unit ");
+      //print(n);
+      //print(" Mode ");
+      //println(User[n].trackerballMode);
+
+    }
   }
 }
 

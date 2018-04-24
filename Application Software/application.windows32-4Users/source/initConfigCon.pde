@@ -34,11 +34,42 @@ int setupMessages(int xp, int yp, int gap){
   //cp5.get(Textfield.class, "StartTrialTextbox").getText()
 }
 
-
+void setupTrackerCon(int xp, int yp){
+  cp5.addTextlabel("TrackerballModeLabel")
+      .setText("Trackerball Mode")
+      .setPosition(xp,yp)
+      .setColorValue(100)
+      .setFont(createFont("Ariel",12))
+      .moveTo("Configuration");
+    ;
+  cp5.addScrollableList("trackerballMapping")
+   .setPosition(xp, yp+20)
+   .setSize(listBoxWidth, listBoxHeight)
+   .setBarHeight(20)
+   .setItemHeight(20)
+   .setColorLabel(255)
+   //.addItems(portList)
+   .setLabel("Trackerball Mode")
+   .addItem("X Only", 0)
+   .addItem("Y Only", 1)
+   .addItem("X-Y/2", 2)
+   .addItem("X+Y/2 ", 3)
+   .setType(ScrollableList.DROPDOWN ) // currently supported DROPDOWN and LIST
+   .close()
+   .moveTo("Configuration");
+   ;
+  cp5.getController( "trackerballMapping" ).setValue(2);
+}
 void setupMapCon(int xp, int yp){
-  
+  cp5.addTextlabel("GameMapLabel")
+      .setText("Diad Mapping")
+      .setPosition(xp,yp)
+      .setColorValue(100)
+      .setFont(createFont("Ariel",12))
+      .moveTo("Configuration");
+    ;
   cp5.addScrollableList("gameMapping")
-   .setPosition(xp, yp)
+   .setPosition(xp, yp+20)
    .setSize(listBoxWidth, listBoxHeight)
    .setBarHeight(20)
    .setItemHeight(20)

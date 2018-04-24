@@ -35,8 +35,8 @@ PCInterfaceUnit[] User;
 TrialController Trial;
 int test1 = 0;
 long timeTest = 0;
-int numberOfEnvironments = 2;
-int numberOfUnits = 4;
+int numberOfEnvironments = 2; //CHANGE THIS TO USE MULTIPLE VIRTUAL ENVIRONMENTS
+int numberOfUnits = numberOfEnvironments*2;
 int environmentWidth = 600;
 
 public void setup()
@@ -267,7 +267,7 @@ public void drawLineWrap(int xS, int lLength, int yHeight){
   
 //all global variables
 boolean MOUSE_TEST_MODE = false;
-boolean animateRounds = true;
+boolean animateRounds = false;
 int replyTimeouts = 0;
 
 boolean noUnitTest = false;
@@ -958,7 +958,7 @@ class PCInterfaceUnit
   int unitNumber;
   boolean printDebugMessages = false;
   boolean printSerialLines = false;
-  int trackerballMode = 2; //0 = use X, 1 = use Y, 2 = use(X+Y)/2, 3 = use (X-Y)/2
+  int trackerballMode = 2; //0 = use X, 1 = use Y, 2 = use(X-Y)/2, 3 = use (X-Y)/2
   int xChange = 0;
   int yChange = 0;
   //int userPos = 0;
@@ -1136,6 +1136,7 @@ class PCInterfaceUnit
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + String.valueOf(NEWLINE);
     sendData(message);
   }
+  
   public void updateHapticsMessage(String lcdMessage){
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + ',' + lcdMessage + String.valueOf(NEWLINE);
     sendData(message);
@@ -2023,11 +2024,42 @@ public int setupMessages(int xp, int yp, int gap){
   //cp5.get(Textfield.class, "StartTrialTextbox").getText()
 }
 
-
+public void setupTrackerCon(int xp, int yp){
+  cp5.addTextlabel("TrackerballModeLabel")
+      .setText("Trackerball Mode")
+      .setPosition(xp,yp)
+      .setColorValue(100)
+      .setFont(createFont("Ariel",12))
+      .moveTo("Configuration");
+    ;
+  cp5.addScrollableList("trackerballMapping")
+   .setPosition(xp, yp+20)
+   .setSize(listBoxWidth, listBoxHeight)
+   .setBarHeight(20)
+   .setItemHeight(20)
+   .setColorLabel(255)
+   //.addItems(portList)
+   .setLabel("Trackerball Mode")
+   .addItem("X Only", 0)
+   .addItem("Y Only", 1)
+   .addItem("X-Y/2", 2)
+   .addItem("X+Y/2 ", 3)
+   .setType(ScrollableList.DROPDOWN ) // currently supported DROPDOWN and LIST
+   .close()
+   .moveTo("Configuration");
+   ;
+  cp5.getController( "trackerballMapping" ).setValue(2);
+}
 public void setupMapCon(int xp, int yp){
-  
+  cp5.addTextlabel("GameMapLabel")
+      .setText("Diad Mapping")
+      .setPosition(xp,yp)
+      .setColorValue(100)
+      .setFont(createFont("Ariel",12))
+      .moveTo("Configuration");
+    ;
   cp5.addScrollableList("gameMapping")
-   .setPosition(xp, yp)
+   .setPosition(xp, yp+20)
    .setSize(listBoxWidth, listBoxHeight)
    .setBarHeight(20)
    .setItemHeight(20)
@@ -2754,7 +2786,7 @@ public void initialiseControls(){
   //setupSerialDisplay();
   setupSerialDisplays(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
   setupCommandButtons();
-  setupDiadControls(800, 35, 50);
+  if(numberOfEnvironments > 1) setupDiadControls(800, 35, 50);
   setupParticipentDataEntry( 1050, 35, 80, numberOfUnits);
   //setupPracticeButtons();
   setupManual(20, 50, 250, 50, numberOfUnits); //Xpos, ypos, x step, y step, quantity
@@ -2767,8 +2799,9 @@ public void initialiseControls(){
   buttonPos = setupParameters(10, buttonPos, buttonSpacing);
   buttonPos = setupTiming(10, buttonPos, buttonSpacing);
   buttonPos = setupSetButton(10, buttonPos, buttonSpacing);
-  buttonPos = setupMessages(400, 140, buttonSpacing*2);
-  setupMapCon( 400, 40);
+  buttonPos = setupMessages(400, 180, buttonSpacing*2);
+  if(numberOfEnvironments > 1) setupMapCon( 400, 40);
+  setupTrackerCon(400+listBoxWidth+100, 40);
 }
 
 
@@ -2779,11 +2812,22 @@ public void controlEvent(ControlEvent theControlEvent) {
   }
   serialEventHandler(theControlEvent);
   manualEventHandler(theControlEvent);
-  
-  if( theControlEvent.isFrom( cp5.getController( "gameMapping" ) ) ){
+  if( numberOfEnvironments > 1 && theControlEvent.isFrom( cp5.getController( "gameMapping" ) ) ){
     Trial.setMapping((int) cp5.getController( "gameMapping" ).getValue());
     //User[n].portIndex = (int) cp5.getController( "gameMapping" ).getValue();
     //println("Game mapping set to: "+(int) cp5.getController( "gameMapping" ).getValue());
+  }
+  if( theControlEvent.isFrom( cp5.getController( "trackerballMapping" ) ) ){
+    
+    //println("Trackermode set:");
+    for(int n = 0; n < numberOfUnits; n++){
+      User[n].trackerballMode = (int)cp5.getController( "trackerballMapping" ).getValue();
+      //print("Unit ");
+      //print(n);
+      //print(" Mode ");
+      //println(User[n].trackerballMode);
+
+    }
   }
 }
 

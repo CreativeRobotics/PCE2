@@ -1,6 +1,6 @@
 //all global variables
 boolean MOUSE_TEST_MODE = false;
-boolean animateRounds = true;
+boolean animateRounds = false;
 int replyTimeouts = 0;
 
 boolean noUnitTest = false;

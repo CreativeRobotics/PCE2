@@ -123,7 +123,7 @@ class PCInterfaceUnit
   int unitNumber;
   boolean printDebugMessages = false;
   boolean printSerialLines = false;
-  int trackerballMode = 2; //0 = use X, 1 = use Y, 2 = use(X+Y)/2, 3 = use (X-Y)/2
+  int trackerballMode = 2; //0 = use X, 1 = use Y, 2 = use(X-Y)/2, 3 = use (X-Y)/2
   int xChange = 0;
   int yChange = 0;
   //int userPos = 0;
@@ -301,6 +301,7 @@ class PCInterfaceUnit
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + String.valueOf(NEWLINE);
     sendData(message);
   }
+  
   void updateHapticsMessage(String lcdMessage){
     String message = HAPTICS_CMD + String.valueOf(haptic0Value) + ',' + String.valueOf(haptic1Value) + ',' + lcdMessage + String.valueOf(NEWLINE);
     sendData(message);
