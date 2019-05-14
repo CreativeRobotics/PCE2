@@ -26,6 +26,13 @@ void runRound(){
     return;
   }
   
+  //Add a half second beep before starting
+  
+  /*
+  for(int n = 0; n < numberOfUnits; n++)User[n].sendBeepOn();
+  delay(500);
+  for(int n = 0; n < numberOfUnits; n++) User[n].sendBeepOff();
+  */
   
   roundStartTime = System.currentTimeMillis();
   startMessageExpiry += roundStartTime;

@@ -268,7 +268,7 @@ class PCEnvironment
     Player1.LEDBrightness = user1.LEDBrightness;
     
     Player0.buttonState = user0.buttonState;
-    Player1.buttonState = user0.buttonState;
+    Player1.buttonState = user1.buttonState;
   }
   //-----------------------------------------------------------------------
   //move by adding new positions to the existing ones
